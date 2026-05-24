@@ -4,12 +4,18 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node --watch server/index.js",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "migrate": "knex migrate:latest --knexfile server/database/knexfile.js",
+    "rollback": "knex migrate:rollback --knexfile server/database/knexfile.js",
+    "seed": "knex seed:run --knexfile server/database/knexfile.js"
   },
   "dependencies": {
+    "express": "^5.2.1",
+    "knex": "^3.2.10",
+    "pg": "^8.21.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6"
   },
@@ -22,6 +28,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
+    "nodemon": "^3.1.14",
     "vite": "^8.0.12"
   }
 }
