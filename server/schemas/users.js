@@ -23,3 +23,8 @@ export const createUserPayloadSchema = z.object({
     email: emailSchema,
     password: passwordSchema,
 });
+export const updateUserPayloadSchema = z.object({
+    id: userIdSchema,
+    username: userNameSchema,
+    email: emailSchema,
+    password: passwordSchema,})
