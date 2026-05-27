@@ -10,3 +10,16 @@ export const passwordSchema = z
     .regex(/[0-9]/, "Must contain a number")
     .regex(/[^a-zA-Z0-9]/, "Must contain a special character");
 
+export const userNameSchema = z
+    .string({ required_error: "Username is required" })
+    .min(3, "Username must be at least 3 characters")
+    .max(24, "Username must be at most 24 characters")
+    .regex(/^[a-zA-Z0-9_-]+$/, "Username can only contain letters, numbers, underscores, and hyphens")
+    .trim()
+
+export const emailSchema = z.email();
+export const createUserPayloadSchema = z.object({
+    username: userNameSchema,
+    email: emailSchema,
+    password: passwordSchema,
+});

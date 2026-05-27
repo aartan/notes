@@ -1,6 +1,7 @@
 import * as userQueries from "../queries/users.js";
-import {userIdSchema, passwordSchema} from "../schemas/users.js";
+import {userIdSchema, createUserPayloadSchema} from "../schemas/users.js";
 import { ZodError } from "zod";
+import {formatZodErrors} from "../utils/validation.js";
 
 export async function getAllUsers(req, res) {
     try {
@@ -16,16 +17,12 @@ export async function getUserById(req, res) {
         const userId = userIdSchema.parse(req.params.id);
         const user = await userQueries.getUserById(userId);
 
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
         res.json(user);
     } catch (error) {
         if (error instanceof ZodError) {
             return res.status(400).json({
                 error: "Validation error",
-                details: error.issues[0].message,
+                details: formatZodErrors(error, "userId"),
             });
         }
 
@@ -35,39 +32,36 @@ export async function getUserById(req, res) {
 
 export async function createUser(req, res) {
     try {
-        const payload = req.body || {};
+        const { username, email, password } = createUserPayloadSchema.parse(req.body);
+        const newUser = await userQueries.createUser(username, email, password);
 
-        // validate payload
-
-        // destructure payload
-
-        if (!payload.username || !payload.email) {
+        return res.status(201).json(newUser);
+    } catch (error) {
+        if (error instanceof ZodError) {
             return res.status(400).json({
-                error: "username and email and password are required",
+                error: "Validation error",
+                details: formatZodErrors(error),
             });
         }
 
-        const newUser = await userQueries.createUser(payload.username, payload.email, payload.password_hash);
-
-        return res.status(201).json(newUser);
-    } catch (err) {
-        return res.status(500).json({ error: "Failed to create user" }, err);
+        return res.status(500).json({ error: "Failed to create user" });
     }
 }
 
 export async function deleteUserById(req, res) {
     try {
 
-        const { userId } = req.param.id || {};
-
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        const user = await userQueries.deleteUser(userId);
+        const userId = userIdSchema.parse(req.params.id);
+        const user = await userQueries.getUserById(userId);
 
         res.json(user);
-    } catch (err) {
-        res.status(500).json({ error: "Failed to fetch user" }, err);
+    } catch (error) {
+        if (error instanceof ZodError) {
+            return res.status(400).json({
+                error: "Validation error",
+                details: formatZodErrors(error, "userId"),
+            });
+        }
+        res.status(500).json({ error: "Failed to fetch user" }, error);
     }
 }
