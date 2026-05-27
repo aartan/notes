@@ -6,7 +6,6 @@ export const passwordSchema = z
     .min(8)
     .max(30)
 
-// Matches faker.internet.userName() more closely
 export const userNameSchema = z
     .string({ required_error: "Username is required" })
     .min(3, "Username must be at least 3 characters")

@@ -52,6 +52,7 @@ export async function deleteUser(req, res) {
     try {
         const userId = userIdSchema.parse(req.params.id);
         const user = await userQueries.deleteUser(userId);
+        if (!user) return res.status(404).json({ error: "User not found" });
 
         res.json(user);
     } catch (error) {
@@ -70,6 +71,7 @@ export async function updateUser(req, res) {
         const userId = req.params.id;
         const userObject = updateUserPayloadSchema.parse({...req.body, userId});
         const user = await userQueries.updateUser({userId, userObject});
+        if (!user) return res.status(404).json({ error: "User not found" });
 
         res.json(user);
     } catch (error) {
