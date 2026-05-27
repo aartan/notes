@@ -4,12 +4,10 @@
  */
 
 export async function up(knex) {
-    // Enable UUID generation
     await knex.raw(`
         CREATE EXTENSION IF NOT EXISTS "pgcrypto";
     `);
 
-    // Users table
     await knex.raw(`
         CREATE TABLE users (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -21,7 +19,6 @@ export async function up(knex) {
         );
     `);
 
-    // Notes table
     await knex.raw(`
         CREATE TABLE notes (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -36,7 +33,6 @@ export async function up(knex) {
         );
     `);
 
-    // Sessions table
     await knex.raw(`
         CREATE TABLE sessions (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -51,7 +47,6 @@ export async function up(knex) {
 }
 
 export async function down(knex) {
-    // Drop child tables first because of foreign keys
     await knex.raw(`DROP TABLE IF EXISTS sessions;`);
     await knex.raw(`DROP TABLE IF EXISTS notes;`);
     await knex.raw(`DROP TABLE IF EXISTS users;`);
