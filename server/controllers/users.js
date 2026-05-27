@@ -67,8 +67,9 @@ export async function deleteUser(req, res) {
 
 export async function updateUser(req, res) {
     try {
-        const userObject = updateUserPayloadSchema.parse(req.body);
-        const user = await userQueries.updateUser(userObject);
+        const userId = req.params.id;
+        const userObject = updateUserPayloadSchema.parse({...req.body, userId});
+        const user = await userQueries.updateUser({userId, userObject});
 
         res.json(user);
     } catch (error) {
