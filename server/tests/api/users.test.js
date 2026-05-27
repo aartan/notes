@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import request from "supertest";
-import app from "../../../app.js";
+import app from "../../app.js";
 import { faker } from "@faker-js/faker";
 
-import * as userQueries from "../../../queries/users.js";
+import * as userQueries from "../../queries/users.js";
 
-vi.mock("../../../queries/users.js");
+vi.mock("../../queries/users.js");
 
 describe("Users API", () => {
 
