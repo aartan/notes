@@ -13,7 +13,8 @@
     "migrate": "knex migrate:latest --knexfile server/database/knexfile.js",
     "rollback": "knex migrate:rollback --knexfile server/database/knexfile.js",
     "seed": "knex seed:run --knexfile server/database/knexfile.js",
-    "test": "vitest"
+    "test": "vitest",
+    "prepare": "husky"
   },
   "dependencies": {
     "express": "^5.2.1",
@@ -33,11 +34,16 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.5",
     "nodemon": "^3.1.14",
     "prettier": "^3.8.3",
     "supertest": "^7.2.2",
     "vite": "^8.0.12",
     "vitest": "^4.1.7",
     "zod": "^4.4.3"
+  },
+  "lint-staged": {
+    "*.js": ["eslint --fix", "prettier --write"]
   }
 }
