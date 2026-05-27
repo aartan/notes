@@ -31,6 +31,23 @@ describe("Users API", () => {
                 { id: 2, username: "jane" },
             ]);
         });
+
+        it("should return empty array when no users exist", async () => {
+            userQueries.getAllUsers.mockResolvedValue([]);
+
+            const res = await request(app).get("/users");
+
+            expect(res.status).toBe(200);
+            expect(res.body).toEqual([]);
+        });
+
+        it("should return 500 on database error", async () => {
+            userQueries.getAllUsers.mockRejectedValue(new Error("DB error"));
+
+            const res = await request(app).get("/users");
+
+            expect(res.status).toBe(500);
+        });
     });
 
     describe("GET /users/:id", () => {
@@ -59,6 +76,15 @@ describe("Users API", () => {
             const res = await request(app).get("/users/abc");
             expect(res.status).toBe(400);
             expect(res.body.error).toBe("Validation error");
+        });
+
+        it("should return 404 when user is not found", async () => {
+            userQueries.getUserById.mockResolvedValue(null);
+
+            const res = await request(app).get(`/users/${faker.string.uuid()}`);
+
+            expect(res.status).toBe(404);
+            expect(res.body.error).toBe("User not found");
         });
     });
 
@@ -128,6 +154,22 @@ describe("Users API", () => {
                 deleted: true,
             });
         });
+
+        it("should return 400 for invalid ID format", async () => {
+            const res = await request(app).delete("/users/abc");
+
+            expect(res.status).toBe(400);
+            expect(res.body.error).toBe("Validation error");
+        });
+
+        it("should return 404 when user to delete is not found", async () => {
+            userQueries.deleteUser.mockResolvedValue(null);
+
+            const res = await request(app).delete(`/users/${faker.string.uuid()}`);
+
+            expect(res.status).toBe(404);
+            expect(res.body.error).toBe("User not found");
+        });
     });
 
     describe("PUT /users/:id", () => {
@@ -158,6 +200,43 @@ describe("Users API", () => {
                 id: mockUser.id,
                 username: mockUser.username,
             });
+        });
+
+        it("should return 400 for invalid ID format", async () => {
+            const res = await request(app)
+                .put("/users/abc")
+                .send({
+                    username: faker.internet.username(),
+                    email: faker.internet.email(),
+                    password: faker.internet.password({ length: 20 }),
+                });
+
+            expect(res.status).toBe(400);
+            expect(res.body.error).toBe("Validation error");
+        });
+
+        it("should return 404 when user to update is not found", async () => {
+            userQueries.updateUser.mockResolvedValue(null);
+
+            const res = await request(app)
+                .put(`/users/${faker.string.uuid()}`)
+                .send({
+                    username: faker.internet.username(),
+                    email: faker.internet.email(),
+                    password: faker.internet.password({ length: 20 }),
+                });
+
+            expect(res.status).toBe(404);
+            expect(res.body.error).toBe("User not found");
+        });
+
+        it("should return 400 on invalid payload", async () => {
+            const res = await request(app)
+                .put(`/users/${faker.string.uuid()}`)
+                .send({ email: "not-an-email" });
+
+            expect(res.status).toBe(400);
+            expect(res.body.error).toBe("Validation error");
         });
     });
 });
