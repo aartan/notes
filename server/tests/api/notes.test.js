@@ -8,17 +8,25 @@ import * as noteQueries from "../../queries/notes.js";
 vi.mock("../../queries/notes.js");
 
 describe("Notes API", () => {
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   describe("GET /notes", () => {
-
     it("should return all notes", async () => {
       noteQueries.getAllNotes.mockResolvedValue([
-        { id: faker.string.uuid(), title: "Note 1", note: "Body 1", is_deleted: false },
-        { id: faker.string.uuid(), title: "Note 2", note: "Body 2", is_deleted: false },
+        {
+          id: faker.string.uuid(),
+          title: "Note 1",
+          note: "Body 1",
+          is_deleted: false,
+        },
+        {
+          id: faker.string.uuid(),
+          title: "Note 2",
+          note: "Body 2",
+          is_deleted: false,
+        },
       ]);
 
       const res = await request(app).get("/notes");
@@ -46,7 +54,6 @@ describe("Notes API", () => {
   });
 
   describe("GET /notes/:id", () => {
-
     it("should return a note", async () => {
       const mockNoteId = faker.string.uuid();
 
@@ -86,33 +93,29 @@ describe("Notes API", () => {
   });
 
   describe("POST /notes", () => {
-
     it("should create a note", async () => {
       const mockNote = {
         id: faker.string.uuid(),
         title: faker.lorem.sentence(),
         note: faker.lorem.paragraph(),
+        author_id: faker.string.uuid(),
         is_deleted: false,
       };
 
       noteQueries.createNote.mockResolvedValue(mockNote);
 
-      const res = await request(app)
-        .post("/notes")
-        .send({
-          title: mockNote.title,
-          note: mockNote.note,
-          is_deleted: mockNote.is_deleted,
-        });
+      const res = await request(app).post("/notes").send({
+        title: mockNote.title,
+        note: mockNote.note,
+        author_id: mockNote.author_id,
+      });
 
       expect(res.status).toBe(201);
       expect(res.body).toEqual(mockNote);
     });
 
     it("should fail validation when title is missing", async () => {
-      const res = await request(app)
-        .post("/notes")
-        .send({ note: "Some body" });
+      const res = await request(app).post("/notes").send({ note: "Some body" });
 
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("Validation error");
@@ -121,7 +124,7 @@ describe("Notes API", () => {
     it("should fail validation when title is empty", async () => {
       const res = await request(app)
         .post("/notes")
-        .send({ title: "", note: "Some body", is_deleted: false });
+        .send({ title: "", note: "Some body", author_id: faker.string.uuid() });
 
       expect(res.status).toBe(400);
       expect(res.body.error).toBe("Validation error");
@@ -132,14 +135,13 @@ describe("Notes API", () => {
 
       const res = await request(app)
         .post("/notes")
-        .send({ title: "Title", note: "Body", is_deleted: false });
+        .send({ title: "Title", note: "Body", author_id: faker.string.uuid() });
 
       expect(res.status).toBe(500);
     });
   });
 
   describe("DELETE /notes/:id", () => {
-
     it("should delete a note", async () => {
       noteQueries.deleteNote.mockResolvedValue({ deleted: true });
 
@@ -167,7 +169,6 @@ describe("Notes API", () => {
   });
 
   describe("PUT /notes/:id", () => {
-
     it("should update a note", async () => {
       const mockNote = {
         id: faker.string.uuid(),

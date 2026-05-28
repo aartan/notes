@@ -1,5 +1,9 @@
 import * as noteQueries from "../queries/notes.js";
-import { noteIdSchema, createNotePayloadSchema, updateNotePayloadSchema } from "../schemas/notes.js";
+import {
+  noteIdSchema,
+  createNotePayloadSchema,
+  updateNotePayloadSchema,
+} from "../schemas/notes.js";
 import { ZodError } from "zod";
 import { formatZodErrors } from "../utils/validation.js";
 
@@ -8,7 +12,9 @@ export async function getAllNotes(req, res) {
     const notes = await noteQueries.getAllNotes();
     res.json(notes);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch notes", message: error.message });
+    res
+      .status(500)
+      .json({ error: "Failed to fetch notes", message: error.message });
   }
 }
 
@@ -27,12 +33,15 @@ export async function getNoteById(req, res) {
       });
     }
 
-    return res.status(500).json({ error: "Failed to fetch note", message: error.message });
+    return res
+      .status(500)
+      .json({ error: "Failed to fetch note", message: error.message });
   }
 }
 
 export async function createNote(req, res) {
   try {
+    // TODO: UPDATE TO USE USERID FROM JWT SESSION
     const payload = createNotePayloadSchema.parse(req.body);
     const newNote = await noteQueries.createNote(payload);
 
@@ -45,7 +54,9 @@ export async function createNote(req, res) {
       });
     }
 
-    return res.status(500).json({ error: "Failed to create note", message: error.message });
+    return res
+      .status(500)
+      .json({ error: "Failed to create note", message: error.message });
   }
 }
 
@@ -64,7 +75,9 @@ export async function deleteNote(req, res) {
       });
     }
 
-    res.status(500).json({ error: "Failed to delete note", message: error.message });
+    res
+      .status(500)
+      .json({ error: "Failed to delete note", message: error.message });
   }
 }
 
@@ -84,6 +97,8 @@ export async function updateNote(req, res) {
       });
     }
 
-    res.status(500).json({ error: "Failed to update note", message: error.message });
+    res
+      .status(500)
+      .json({ error: "Failed to update note", message: error.message });
   }
 }
